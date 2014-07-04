@@ -20,8 +20,5 @@
       "homepage": "http://www.deluxeblogtips.com/",
       "role": "Developer"
     }
-  ],
-  "autoload": {
-        "files": ["meta-box.php"]        
-    } 
+  ]
 }
