@@ -12,7 +12,6 @@
   "description": "Easily create custom meta boxes in WordPress.",
   "homepage": "http://www.deluxeblogtips.com/meta-box/",
   "license": "GPLv2",
-  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Tran Ngoc Tuan Anh",
