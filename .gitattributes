@@ -12,9 +12,7 @@ Thumbs.db
 .jshintrc export-ignore
 .travis.yml export-ignore
 codesniffer.ruleset.xml export-ignore
-composer.json export-ignore
 Gruntfile.js export-ignore
-meta-box-loader.php export-ignore
 package.json export-ignore
 readme.md export-ignore
 lang/*.po export-ignore
