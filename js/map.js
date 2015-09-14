@@ -3,13 +3,13 @@
 	'use strict';
 
 	// Use function construction to store map & DOM elements separately for each instance
-	var mapField = function ( $container )
+	var MapField = function ( $container )
 	{
 		this.$container = $container;
 	};
 
 	// Use prototype for better performance
-	mapField.prototype = {
+	MapField.prototype = {
 		// Initialize everything
 		init              : function ()
 		{
@@ -45,7 +45,7 @@
 				streetViewControl: 0,
 				mapTypeId        : google.maps.MapTypeId.ROADMAP
 			} );
-			this.marker = new google.maps.Marker( {position: latLng, map: this.map, draggable: true} );
+			this.marker = new google.maps.Marker( { position: latLng, map: this.map, draggable: true } );
 			this.geocoder = new google.maps.Geocoder();
 		},
 
@@ -91,6 +91,21 @@
 				that.geocodeAddress();
 				return false;
 			} );
+
+			/**
+			 * Add a custom event that allows other scripts to refresh the maps when needed
+			 * For example: when maps is in tabs or hidden div (this is known issue of Google Maps)
+			 *
+			 * @see https://developers.google.com/maps/documentation/javascript/reference
+			 *      ('resize' Event)
+			 */
+			$( window ).on( 'rwmb_map_refresh', function()
+			{
+				if ( that.map )
+				{
+					google.maps.event.trigger( that.map, 'resize' );
+				}
+			} );
 		},
 
 		// Autocomplete address
@@ -100,7 +115,9 @@
 
 			// No address field or more than 1 address fields, ignore
 			if ( !this.addressField || this.addressField.split( ',' ).length > 1 )
+			{
 				return;
+			}
 
 			$( '#' + this.addressField ).autocomplete( {
 				source: function ( request, response )
@@ -153,11 +170,11 @@
 				addressList[loop] = jQuery( '#' + fieldList[loop] ).val();
 			}
 
-			address = addressList.join( "," ).replace( /\n/g, ',' ).replace( /,,/g, ',' );
+			address = addressList.join( ',' ).replace( /\n/g, ',' ).replace( /,,/g, ',' );
 
 			if ( address )
 			{
-				this.geocoder.geocode( {'address': address}, function ( results, status )
+				this.geocoder.geocode( { 'address': address }, function ( results, status )
 				{
 					if ( status === google.maps.GeocoderStatus.OK )
 					{
@@ -174,17 +191,18 @@
 	{
 		$( '.rwmb-map-field' ).each( function ()
 		{
-			var field = new mapField( $( this ) );
+			var field = new MapField( $( this ) );
 			field.init();
 
 			$( this ).data( 'mapController', field );
+
 		} );
 
-		$( '.rwmb-input' ).on( 'clone', function ( params )
+		$( '.rwmb-input' ).on( 'clone', function ()
 		{
 			$( '.rwmb-map-field' ).each( function ()
 			{
-				var field = new mapField( $( this ) );
+				var field = new MapField( $( this ) );
 				field.init();
 
 				$( this ).data( 'mapController', field );

@@ -17,7 +17,7 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 		{
 			RWMB_Select_Advanced_Field::admin_enqueue_scripts();
 			wp_enqueue_style( 'rwmb-taxonomy', RWMB_CSS_URL . 'taxonomy.css', array(), RWMB_VER );
-			wp_enqueue_script( 'rwmb-taxonomy', RWMB_JS_URL . 'taxonomy.js', array( 'jquery', 'rwmb-select-advanced', 'wp-ajax-response' ), RWMB_VER, true );
+			wp_enqueue_script( 'rwmb-taxonomy', RWMB_JS_URL . 'taxonomy.js', array( 'rwmb-select-advanced' ), RWMB_VER, true );
 		}
 
 		/**
@@ -36,10 +36,10 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 			// Set default args
 			$field['options']['args'] = ! isset( $field['options']['args'] ) ? $default_args : wp_parse_args( $field['options']['args'], $default_args );
 
-			$tax = get_taxonomy( $field['options']['taxonomy'] );
-			$field['placeholder'] = empty( $field['placeholder'] ) ? sprintf( __( 'Select a %s' , 'rwmb' ), $tax->labels->singular_name ) : $field['placeholder'];
+			$tax                  = get_taxonomy( $field['options']['taxonomy'] );
+			$field['placeholder'] = empty( $field['placeholder'] ) ? sprintf( __( 'Select a %s', 'meta-box' ), $tax->labels->singular_name ) : $field['placeholder'];
 
-			switch( $field['options']['type'] )
+			switch ( $field['options']['type'] )
 			{
 				case 'select_advanced':
 					$field = RWMB_Select_Advanced_Field::normalize_field( $field );
@@ -54,7 +54,7 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 					break;
 				default:
 					$field['options']['type'] = 'select';
-					$field = RWMB_Select_Field::normalize_field( $field );
+					$field                    = RWMB_Select_Field::normalize_field( $field );
 			}
 
 			if ( in_array( $field['options']['type'], array( 'checkbox_tree', 'select_tree' ) ) )
@@ -88,22 +88,23 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 			$options = $field['options'];
 			$terms   = get_terms( $options['taxonomy'], $options['args'] );
 
-			$field['options'] = self::get_options( $terms );
+			$field['options']      = self::get_options( $terms );
+			$field['display_type'] = $options['type'];
 
 			$html = '';
 
-			switch( $options['type'] )
+			switch ( $options['type'] )
 			{
 				case 'checkbox_list':
 					$html = RWMB_Checkbox_List_Field::html( $meta, $field );
 					break;
 				case 'checkbox_tree':
 					$elements = self::process_terms( $terms );
-					$html    .= self::walk_checkbox_tree( $meta, $field, $elements, $options['parent'], true );
+					$html .= self::walk_checkbox_tree( $meta, $field, $elements, $options['parent'], true );
 					break;
 				case 'select_tree':
 					$elements = self::process_terms( $terms );
-					$html    .= self::walk_select_tree( $meta, $field, $elements, $options['parent'], true );
+					$html .= self::walk_select_tree( $meta, $field, $elements, $options['parent'], true );
 					break;
 				case 'select_advanced':
 					$html = RWMB_Select_Advanced_Field::html( $meta, $field );
@@ -130,13 +131,13 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 		static function walk_checkbox_tree( $meta, $field, $elements, $parent = 0, $active = false )
 		{
 			if ( ! isset( $elements[$parent] ) )
-				return;
-			$terms  = $elements[$parent];
+				return '';
+			$terms            = $elements[$parent];
 			$field['options'] = self::get_options( $terms );
-			$hidden = $active ? '' : 'hidden';
+			$hidden           = $active ? '' : 'hidden';
 
 			$html = "<ul class = 'rw-taxonomy-tree {$hidden}'>";
-			$li = '<li><label><input type="checkbox" name="%s" value="%s"%s> %s</label>';
+			$li   = '<li><label><input type="checkbox" name="%s" value="%s"%s> %s</label>';
 			foreach ( $terms as $term )
 			{
 				$html .= sprintf(
@@ -167,19 +168,19 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 		static function walk_select_tree( $meta, $field, $elements, $parent = 0, $active = false )
 		{
 			if ( ! isset( $elements[$parent] ) )
-				return;
-			$terms    = $elements[$parent];
+				return '';
+			$terms            = $elements[$parent];
 			$field['options'] = self::get_options( $terms );
 
-			$classes = array( 'rw-taxonomy-tree' );
+			$classes   = array( 'rw-taxonomy-tree' );
 			$classes[] = $active ? 'active' : 'disabled';
 			$classes[] = "rwmb-taxonomy-{$parent}";
 
-			$html  = '<div class="' . implode( ' ', $classes ) . '">';
+			$html = '<div class="' . implode( ' ', $classes ) . '">';
 			$html .= RWMB_Select_Field::html( $meta, $field );
 			foreach ( $terms as $term )
 			{
-				$html .= self::walk_select_tree( $meta, $field, $elements, $term->term_id, $active && in_array( $term->term_id, $meta )  );
+				$html .= self::walk_select_tree( $meta, $field, $elements, $term->term_id, $active && in_array( $term->term_id, $meta ) );
 			}
 			$html .= '</div>';
 
@@ -201,6 +202,7 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 			{
 				$elements[$term->parent][] = $term;
 			}
+
 			return $elements;
 		}
 
@@ -214,10 +216,11 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 		static function get_options( $terms = array() )
 		{
 			$options = array();
-			foreach( $terms as $term )
+			foreach ( $terms as $term )
 			{
 				$options[$term->term_id] = $term->name;
 			}
+
 			return $options;
 		}
 
@@ -256,6 +259,106 @@ if ( ! class_exists( 'RWMB_Taxonomy_Field' ) )
 			$meta = wp_list_pluck( $meta, 'term_id' );
 
 			return $meta;
+		}
+
+		/**
+		 * Get the field value
+		 * Return list of post term objects
+		 *
+		 * @param  array    $field   Field parameters
+		 * @param  array    $args    Additional arguments. Rarely used. See specific fields for details
+		 * @param  int|null $post_id Post ID. null for current post. Optional.
+		 *
+		 * @return array List of post term objects
+		 */
+		static function get_value( $field, $args = array(), $post_id = null )
+		{
+			if ( ! $post_id )
+				$post_id = get_the_ID();
+
+			$value = wp_get_post_terms( $post_id, $field['options']['taxonomy'] );
+
+			// Get single value if necessary
+			if ( ! $field['clone'] && ! $field['multiple'] )
+			{
+				$value = reset( $value );
+			}
+			return $value;
+		}
+
+		/**
+		 * Output the field value
+		 * Display unordered list of option labels, not option values
+		 *
+		 * @param  array    $field   Field parameters
+		 * @param  array    $args    Additional arguments. Not used for these fields.
+		 * @param  int|null $post_id Post ID. null for current post. Optional.
+		 *
+		 * @return string Link(s) to post
+		 */
+		static function the_value( $field, $args = array(), $post_id = null )
+		{
+			$class = RW_Meta_Box::get_class_name( $field );
+			$value = call_user_func( array( $class, 'get_value' ), $field, $args, $post_id );
+			if ( ! $value || is_wp_error( $value ) )
+				return '';
+
+			$function = array( $class, 'get_option_label' );
+
+			if ( $field['clone'] )
+			{
+				$output = '<ul>';
+				if ( $field['multiple'] )
+				{
+					foreach ( $value as $subvalue )
+					{
+						$output .= '<li>';
+						array_walk_recursive( $subvalue, $function, $field );
+						$output .= '<ul><li>' . implode( '</li><li>', $subvalue ) . '</li></ul>';
+						$output .= '</li>';
+					}
+				}
+				else
+				{
+					array_walk_recursive( $value, $function, $field );
+					$output = '<li>' . implode( '</li><li>', $value ) . '</li>';
+				}
+				$output .= '</ul>';
+			}
+			else
+			{
+				if ( $field['multiple'] )
+				{
+					array_walk_recursive( $value, $function, $field );
+					$output = '<ul><li>' . implode( '</li><li>', $value ) . '</li></ul>';
+				}
+				else
+				{
+					call_user_func_array( $function, array( &$value, 0, $field ) );
+					$output = $value;
+				}
+			}
+
+			return $output;
+		}
+
+		/**
+		 * Get post link to display in the frontend
+		 *
+		 * @param object $value Option value, e.g. term object
+		 * @param int    $index Array index
+		 * @param array  $field Field parameter
+		 *
+		 * @return string
+		 */
+		static function get_option_label( &$value, $index, $field )
+		{
+			$value = sprintf(
+				'<a href="%s" title="%s">%s</a>',
+				esc_url( get_term_link( $value ) ),
+				esc_attr( $value->name ),
+				$value->name
+			);
 		}
 	}
 }

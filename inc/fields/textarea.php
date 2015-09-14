@@ -9,8 +9,8 @@ if ( ! class_exists( 'RWMB_Textarea_Field' ) )
 		/**
 		 * Get field HTML
 		 *
-		 * @param mixed  $meta
-		 * @param array  $field
+		 * @param mixed $meta
+		 * @param array $field
 		 *
 		 * @return string
 		 */
@@ -28,6 +28,18 @@ if ( ! class_exists( 'RWMB_Textarea_Field' ) )
 		}
 
 		/**
+		 * Escape meta for field output
+		 *
+		 * @param mixed $meta
+		 *
+		 * @return mixed
+		 */
+		static function esc_meta( $meta )
+		{
+			return is_array( $meta ) ? array_map( 'esc_textarea', $meta ) : esc_textarea( $meta );
+		}
+
+		/**
 		 * Normalize parameters for field
 		 *
 		 * @param array $field
@@ -40,6 +52,7 @@ if ( ! class_exists( 'RWMB_Textarea_Field' ) )
 				'cols' => 60,
 				'rows' => 3,
 			) );
+
 			return $field;
 		}
 	}

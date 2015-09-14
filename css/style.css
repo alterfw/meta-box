@@ -34,11 +34,13 @@
 /* Clone */
 .rwmb-clone {
 	min-height: 24px;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 	position: relative;
+	clear: both;
+	background: #fff;
 }
-.rwmb-clone > input[type="radio"],
-.rwmb-clone > input[type="checkbox"] {
+.rwmb-clone > input[type='radio'],
+.rwmb-clone > input[type='checkbox'] {
 	margin: 6px 0 0 4px;
 }
 .rwmb-button {
@@ -48,6 +50,14 @@
 	position: absolute;
 	top: 0;
 	right: 0;
+}
+.rwmb-clone-icon {
+	cursor: move;
+	background: url(../img/drag_icon.gif) no-repeat;
+	height: 23px;
+	width: 15px;
+	float: left;
+	margin-left: -15px;
 }
 
 /* Fix empty block below admin footer (issue #24) */

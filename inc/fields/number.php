@@ -2,15 +2,15 @@
 // Prevent loading this file directly
 defined( 'ABSPATH' ) || exit;
 
-if ( !class_exists( 'RWMB_Number_Field' ) )
+if ( ! class_exists( 'RWMB_Number_Field' ) )
 {
 	class RWMB_Number_Field extends RWMB_Field
 	{
 		/**
 		 * Get field HTML
 		 *
-		 * @param mixed  $meta
-		 * @param array  $field
+		 * @param mixed $meta
+		 * @param array $field
 		 *
 		 * @return string
 		 */
@@ -40,6 +40,7 @@ if ( !class_exists( 'RWMB_Number_Field' ) )
 				'step' => 1,
 				'min'  => 0,
 			) );
+
 			return $field;
 		}
 	}

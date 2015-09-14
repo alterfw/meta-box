@@ -2,7 +2,7 @@
 // Prevent loading this file directly
 defined( 'ABSPATH' ) || exit;
 
-if ( !class_exists( 'RWMB_Slider_Field' ) )
+if ( ! class_exists( 'RWMB_Slider_Field' ) )
 {
 	class RWMB_Slider_Field extends RWMB_Field
 	{
@@ -25,8 +25,8 @@ if ( !class_exists( 'RWMB_Slider_Field' ) )
 		/**
 		 * Get div HTML
 		 *
-		 * @param mixed  $meta
-		 * @param array  $field
+		 * @param mixed $meta
+		 * @param array $field
 		 *
 		 * @return string
 		 */
@@ -38,7 +38,7 @@ if ( !class_exists( 'RWMB_Slider_Field' ) )
 					<span class="rwmb-slider-value-label">%s<span>%s</span>%s</span>
 					<input type="hidden" name="%s" value="%s" class="rwmb-slider-value">
 				</div>',
-				$field['id'], esc_attr( json_encode( $field['js_options'] ) ),
+				$field['id'], esc_attr( wp_json_encode( $field['js_options'] ) ),
 				$field['prefix'], $meta, $field['suffix'],
 				$field['field_name'], $meta
 			);
@@ -53,7 +53,7 @@ if ( !class_exists( 'RWMB_Slider_Field' ) )
 		 */
 		static function normalize_field( $field )
 		{
-			$field = wp_parse_args( $field, array(
+			$field               = wp_parse_args( $field, array(
 				'prefix'     => '',
 				'suffix'     => '',
 				'js_options' => array(),
